@@ -4,31 +4,7 @@ import firebird.driver as fb
 argvs = sys.argv
 caminho_banco = argvs[1]
 nome_empresa = argvs[2]
-
-print(argvs[1])
-print(argvs[2])
-
-
-
-print("")
-print("########## DADOS DA EMPRESA ##########")
-print("")
-emp_cod = input("Digite o código da empresa: ")
-razao_social = input("Razão Social da empresa: ")
-nome_fan = input("Nome fantasia: ")
-endereco = input("Endereço da empresa: ")
-numero_end = input("Numero: ")
-complemento = input("Complemento: ")
-bairro = input("Bairro: ")
-cidade = input("Cidade: ")
-estado = input("Estado: ")
-cep = input("CEP: ")
-cnpj = input("CNPJ: ")
-insc_estadual = input("Inscrição Estadual: ")
-contato = input("Contato: ")
-emp_sigla = input("Sigla da empresa: ")
-emp_email = input("Email da empresa: ")
-emp_raz_xml = input ("Razão Social no XML: ")
+empresa = argvs[3]
 
 # CONEXAO COM BANCO DE DADOS
 con = fb.connect(
@@ -39,43 +15,140 @@ con = fb.connect(
 
 cur = con.cursor()
 
-cur.execute("""
-    UPDATE SETEMPRESAS SET
-        EMP_RAZ = ?,
-        EMP_FAN = ?,
-        EMP_LOGRA = ?,
-        EMP_NUM = ?,
-        EMP_COMPL = ?,
-        EMP_BAIR = ?,
-        EMP_CID = ?,
-        EMP_EST = ?,
-        EMP_CEP = ?,
-        EMP_CGC = ?,
-        EMP_INSC = ?,
-        EMP_TEL = ?,
-        EMP_SIGLA = ?,
-        EMP_EMAIL = ?,
-        EMP_RAZ_XML = ?
-    WHERE (EMP_COD = ?);
-""", (razao_social, nome_fan, endereco, numero_end, complemento, bairro, cidade, estado, cep, cnpj, insc_estadual, contato, emp_sigla, emp_email, emp_raz_xml, emp_cod))
+def info_empresa():
+    
+    # DADOS DA EMPRESA
+    print("")
+    print("########## DADOS DA EMPRESA ##########")
+    print("")
+    razao_social = input("Razão Social da empresa: ")
+    nome_fan = input("Nome fantasia: ")
+    endereco = input("Endereço da empresa: ")
+    numero_end = input("Numero: ")
+    complemento = input("Complemento: ")
+    bairro = input("Bairro: ")
+    cidade = input("Cidade: ")
+    estado = input("Estado: ")
+    cep = input("CEP: ")
+    cnpj = input("CNPJ: ")
+    insc_estadual = input("Inscrição Estadual: ")
+    contato = input("Contato: ")
+    emp_sigla = input("Sigla da empresa: ")
+    emp_email = input("Email da empresa: ")
+    emp_raz_xml = input ("Razão Social no XML: ")
+    
 
+    # SETEMPRESAS
+    cur.execute(f"""
+        UPDATE SETEMPRESAS SET
+            EMP_RAZ = ?,
+            EMP_FAN = ?,
+            EMP_LOGRA = ?,
+            EMP_NUM = ?,
+            EMP_COMPL = ?,
+            EMP_BAIR = ?,
+            EMP_CID = ?,
+            EMP_EST = ?,
+            EMP_CEP = ?,
+            EMP_CGC = ?,
+            EMP_INSC = ?,
+            EMP_TEL = ?,
+            EMP_SIGLA = ?,
+            EMP_EMAIL = ?,
+            EMP_RAZ_XML = ?
+        WHERE (EMP_COD = {argvs[3]});
+    """, (razao_social, nome_fan, endereco, numero_end, complemento, bairro, cidade, estado, cep, cnpj, insc_estadual, contato, emp_sigla, emp_email, emp_raz_xml))
 
-cur.execute(f"""
-    UPDATE SETCONFIG SET 
-        PATH_REPORT = 'X:\\ARQUIVOS\\{argvs[2]}\\Report',
-        PATH_REPORT_PERSONALIZADA = 'X:\\ARQUIVOS\\{argvs[2]}\\Report',
-        PATH_ANEXOS = 'X:\\ARQUIVOS\\{argvs[2]}\\Report',
-        CAMINHO_CERTIFICADO = '',
-        SENHA_CERTIFICADO = '',
-        DIAS_VENCIMENTO_CERTIFICADO = 30,
-        USU_CONNECTION = 100,
-        USA_CLOUD = 1,
-        NFE_TPAMB = '2'
-    WHERE (EMP_COD >= 1);
-""")   
+    print(cur.fetchall())
+    con.commit()
+    con.close()
 
-print(cur.fetchall())
-con.commit()
-con.close()
+def updates():
 
-print("Updates executados.")
+    # SETCONFIG
+    cur.execute(f"""
+        UPDATE SETCONFIG SET 
+            PATH_REPORT = 'X:\\ARQUIVOS\\{argvs[2]}\\Report',
+            PATH_REPORT_PERSONALIZADA = 'X:\\ARQUIVOS\\{argvs[2]}\\Report',
+            PATH_ANEXOS = 'X:\\ARQUIVOS\\{argvs[2]}\\Report',
+            CAMINHO_CERTIFICADO = '',
+            SENHA_CERTIFICADO = '',
+            DIAS_VENCIMENTO_CERTIFICADO = 30,
+            USU_CONNECTION = 100,
+            USA_CLOUD = 1,
+            NFE_TPAMB = '2'
+        WHERE (EMP_COD = {argvs[3]});
+    """)   
+
+    # SETCONFIGNFE
+    cur.execute(f"""
+        UPDATE SETCONFIGNFE SET 
+            NFE_DANFE = 'X:\\ARQUIVOS\\{argvs[2]}\\FISCAL\\00{argvs[3]}\\Nfe\\Danfe\\retrato.rtm',
+            LOG_PATH = 'X:\\ARQUIVOS\\{argvs[2]}\\Fiscal\\00{argvs[3]}\\NFe\\Logs',
+            XML_PATH = 'X:\\ARQUIVOS\\{argvs[2]}\\Fiscal\\00{argvs[3]}\\NFe\\XML',
+            NFCE_DANFE = 'X:\\ARQUIVOS\\{argvs[2]}\\Fiscal\\00{argvs[3]}\\NFCe\\Danfe\\retrato.rtm',
+            LOG_PATH_NFCE = 'X:\\ARQUIVOS\\{argvs[2]}\\Fiscal\\00{argvs[3]}\\NFCe\\Log',
+            XML_PATH_NFCE = 'X:\\ARQUIVOS\\{argvs[2]}\\Fiscal\\00{argvs[3]}\\NFCe\\XML',
+            LOG_PATH_MDFE = 'X:\\ARQUIVOS\\{argvs[2]}\\Fiscal\\00{argvs[3]}\\MDFe\\LOG',
+            XML_PATH_MDFE = 'X:\\ARQUIVOS\\{argvs[2]}\\Fiscal\\00{argvs[3]}\\MDFe\\XML'
+        WHERE (EMP_COD = {argvs[3]});        
+    """)  
+
+    # COMFORNECEDORESPAR
+    cur.execute(f"""
+        UPDATE COMFORNECEDORESPAR SET 
+            PED_PATH = 'X:\\ARQUIVOS\\{argvs[2]}\\REPORT\\Compras\\Reports\\ComprasReport.rav'
+        WHERE (EMP_COD = {argvs[3]});        
+    """)            
+
+    # VENPARAMETROS
+    cur.execute(f"""
+        UPDATE VENPARAMETROS SET 
+            PED_PATH = 'X:\\ARQUIVOS\\{argvs[2]}\\Report\\Vendas\\Reports\\VendasReport.rav',
+            PRO_PATH = 'X:\\ARQUIVOS\\{argvs[2]}\\Report\\Vendas\\Reports\\PreVendaReport.rav',
+            NF_PATH = 'X:\\ARQUIVOS\\{argvs[2]}\\Report\\Produtos\\Reports\\ProdutosReport.rav',
+            DP_PATH = 'X:\\ARQUIVOS\\{argvs[2]}\\Report\\Vendas\\Reports\\BoletoPadrao.rav',
+            IMP_PORTA = 'UNIVERSAL PRINTER',
+            IMP_PORTA_PROP = 'UNIVERSAL PRINTER',
+            IMP_PORTA_PLAL = 'UNIVERSAL PRINTER',
+            IMP_PORTA_FRET = 'UNIVERSAL PRINTER',
+            IMP_PORTA_RETI = 'UNIVERSAL PRINTER',
+            IMP_PORTA_ESPE = 'UNIVERSAL PRINTER',
+            IMP_PORTA_BOLT = 'UNIVERSAL PRINTER',
+            IMP_PORTA_FAX = 'UNIVERSAL PRINTER',
+            IMP_PORTA_KIT = 'UNIVERSAL PRINTER',
+            MAPA_PATH = 'X:\\ARQUIVOS\\{argvs[2]}\\Report\\Vendas\\Reports\\MapaCargaReport.rav',
+            PLA_PATH = 'X:\\ARQUIVOS\\{argvs[2]}\\Report\\Vendas\\Reports\\Vendaspla_separacao.rav',
+            ORCAMENTO_PATH = 'X:\\ARQUIVOS\\{argvs[2]}\\Report\\Vendas\\Reports\\Orcamento.fr3'
+        WHERE (EMP_COD = {argvs[3]});
+    """)        
+
+    # PCPPARAMETROS
+    cur.execute(f"""
+        UPDATE PCPPARAMETROS SET 
+            OP_PATH = 'X:\\ARQUIVOS\\{argvs[2]}\\REPORT\\PCP\\Reports\\SIGPCPReport_OP_Padrao.rav',
+            LAUDO_PROD_PRODUCAO_PATH = 'X:\\ARQUIVOS\\{argvs[2]}\\REPORT\\PCP\\Reports\\SIGPCPReport_Laudo_Produto_Producao_Padrao.rav',
+            LAUDO_PROD_ACABADO_PATH = 'X:\\ARQUIVOS\\{argvs[2]}\\REPORT\\PCP\\Reports\\SIGPCPReport_Laudo_Produto_Acabado_Padrao.rav',
+            ETIQUETA_APTO_PATH = NULL
+        WHERE (EMP_COD = {argvs[3]});        
+    """)
+    print(cur.fetchall())
+    con.commit()
+    con.close()
+
+print(f"Caminho da base: {argvs[1]}")
+print(f"Alias da base: {argvs[2]}")
+print(f"Código da empresa: {argvs[3]}")
+print("")
+
+print("########## ESCOLHA UMA OPÇÃO ##########")
+resposta = input("1 - Primeira empresa / 2 - Nova empresa: ")
+if resposta == "1":
+    info_empresa()
+    updates()
+    print("Updates executados.")
+elif resposta == "2":
+    updates()
+    print("Updates executados.")
+else:
+    print("Resposta inválida.")
