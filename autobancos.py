@@ -1,4 +1,5 @@
 import sys
+from time import sleep
 import firebird.driver as fb
 
 argvs = sys.argv
@@ -12,7 +13,6 @@ con = fb.connect(
     user="SYSDBA", 
     password="masterkey"
 )  
-
 cur = con.cursor()
 
 def info_empresa():
@@ -142,11 +142,10 @@ print(f"Código da empresa: {argvs[3]}")
 print("")
 
 print("########## ESCOLHA UMA OPÇÃO ##########")
-resposta = input("1 - Primeira empresa / 2 - Nova empresa: ")
+resposta = input("1 - Informações empresa / 2 - Ajuste caminhos: ")
 if resposta == "1":
     info_empresa()
-    updates()
-    print("Updates executados.")
+    print("Informações da empresa registradas.")
 elif resposta == "2":
     updates()
     print("Updates executados.")
