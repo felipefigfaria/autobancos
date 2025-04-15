@@ -16,28 +16,17 @@ con = fb.connect(
 cur = con.cursor()
 
 def info_empresa():
-    
-    # DADOS DA EMPRESA
-    print("")
-    print("########## DADOS DA EMPRESA ##########")
-    print("")
-    razao_social = input("Razão Social da empresa: ")
-    nome_fan = input("Nome fantasia: ")
-    endereco = input("Endereço da empresa: ")
-    numero_end = input("Numero: ")
-    complemento = input("Complemento: ")
-    bairro = input("Bairro: ")
-    cidade = input("Cidade: ")
-    estado = input("Estado: ")
-    cep = input("CEP: ")
-    cnpj = input("CNPJ: ")
-    insc_estadual = input("Inscrição Estadual: ")
-    contato = input("Contato: ")
-    emp_sigla = input("Sigla da empresa: ")
-    emp_email = input("Email da empresa: ")
-    emp_raz_xml = input ("Razão Social no XML: ")
-    
 
+    with open("info_empresa.txt", "r", encoding="utf-8") as file:
+        infos = [linha.strip() for linha in file.readlines()]
+
+    if len(infos) != 15:
+        print("Arquivo de informações inválido, necessário ter 15 linhas!")
+        return
+    
+    (razao_social, nome_fan, endereco, numero_end, complemento, bairro, cidade, estado, cep,
+     cnpj, insc_estadual, contato, emp_sigla, emp_email, emp_raz_xml) = infos
+      
     # SETEMPRESAS
     cur.execute(f"""
         UPDATE SETEMPRESAS SET
@@ -59,7 +48,6 @@ def info_empresa():
         WHERE (EMP_COD = {argvs[3]});
     """, (razao_social, nome_fan, endereco, numero_end, complemento, bairro, cidade, estado, cep, cnpj, insc_estadual, contato, emp_sigla, emp_email, emp_raz_xml))
 
-    print(cur.fetchall())
     con.commit()
     con.close()
 
@@ -142,7 +130,7 @@ print(f"Código da empresa: {argvs[3]}")
 print("")
 
 print("########## ESCOLHA UMA OPÇÃO ##########")
-resposta = input("1 - Informações empresa / 2 - Ajuste caminhos: ")
+resposta = input("1 - Informações da empresa / 2 - Ajuste dos caminhos: ")
 if resposta == "1":
     info_empresa()
     print("Informações da empresa registradas.")
