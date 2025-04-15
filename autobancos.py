@@ -1,5 +1,4 @@
 import sys
-from time import sleep
 import firebird.driver as fb
 
 argvs = sys.argv
@@ -120,7 +119,6 @@ def updates():
             ETIQUETA_APTO_PATH = NULL
         WHERE (EMP_COD = {argvs[3]});        
     """)
-    print(cur.fetchall())
     con.commit()
     con.close()
 
