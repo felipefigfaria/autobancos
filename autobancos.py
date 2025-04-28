@@ -1,31 +1,46 @@
 import sys
+import os
 import firebird.driver as fb
+from dotenv import load_dotenv
 
 argvs = sys.argv
 caminho_banco = argvs[1]
 nome_empresa = argvs[2]
 empresa = argvs[3]
+dotenv_path = os.path.join(os.path.dirname(__file__), '.env.example')
+
+load_dotenv(dotenv_path)
+# CREDENCIAIS BANCO DE DADOS
+db_user = os.getenv('DB_USER')
+db_pass = os.getenv('DB_PASS')
+
+# INFORMACOES EMPRESA
+razao_social = os.getenv('RAZAO_SOCIAL')
+nome_fantasia = os.getenv('NOME_FANTASIA')
+endereco = os.getenv('ENDERECO')
+end_numero = os.getenv('END_NUMERO')
+end_compl = os.getenv('END_COMPL')
+end_bairro = os.getenv('END_BAIRRO')
+cidade = os.getenv('CIDADE')
+estado = os.getenv('ESTADO')
+cep = os.getenv('CEP')
+cnpj = os.getenv('CNPJ')
+insc_estadual = os.getenv('INSC_ESTADUAL')
+contato = os.getenv('CONTATO')
+emp_sigla = os.getenv('EMP_SIGLA')
+emp_email = os.getenv('EMP_EMAIL')
+emp_raz_xml = os.getenv('EMP_RAZAO_XML')
 
 # CONEXAO COM BANCO DE DADOS
 con = fb.connect(
     database=argvs[1],  # Caminho do banco de dados
-    user="SYSDBA", 
-    password="masterkey"
+    user=db_user,
+    password=db_pass
 )  
 cur = con.cursor()
 
 def info_empresa():
-
-    with open("info_empresa.txt", "r", encoding="utf-8") as file:
-        infos = [linha.strip() for linha in file.readlines()]
-
-    if len(infos) != 15:
-        print("Arquivo de informações inválido, necessário ter 15 linhas!")
-        return
-    
-    (razao_social, nome_fan, endereco, numero_end, complemento, bairro, cidade, estado, cep,
-     cnpj, insc_estadual, contato, emp_sigla, emp_email, emp_raz_xml) = infos
-      
+           
     # SETEMPRESAS
     cur.execute(f"""
         UPDATE SETEMPRESAS SET
@@ -45,7 +60,8 @@ def info_empresa():
             EMP_EMAIL = ?,
             EMP_RAZ_XML = ?
         WHERE (EMP_COD = {argvs[3]});
-    """, (razao_social, nome_fan, endereco, numero_end, complemento, bairro, cidade, estado, cep, cnpj, insc_estadual, contato, emp_sigla, emp_email, emp_raz_xml))
+    """, (razao_social, nome_fantasia, endereco, end_numero, end_compl, end_bairro, cidade, estado, cep, cnpj, 
+          insc_estadual, contato, emp_sigla, emp_email, emp_raz_xml))
 
     con.commit()
     con.close()
